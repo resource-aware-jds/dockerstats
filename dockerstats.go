@@ -31,6 +31,8 @@
 package dockerstats
 
 import (
+	"github.com/joho/godotenv"
+	"log"
 	"os"
 	"runtime"
 )
@@ -60,6 +62,10 @@ var MacOSCommunicator Communicator = CliCommunicator{
 }
 
 func getEnv(key, fallback string) string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	if value, ok := os.LookupEnv(key); ok {
 		return value
 	}
