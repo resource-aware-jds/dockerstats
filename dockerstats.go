@@ -30,11 +30,14 @@
 //	}
 package dockerstats
 
-import "runtime"
+import (
+	"os"
+	"runtime"
+)
 
-const (
+var (
 	defaultDockerPath        string = "/usr/bin/docker"
-	macOSDockerPath          string = "/usr/local/bin/docker"
+	macOSDockerPath          string = getEnv("DOCKER_OS_PATH", "/usr/local/bin/docker")
 	defaultDockerCommand     string = "stats"
 	defaultDockerNoStreamArg string = "--no-stream"
 	defaultDockerFormatArg   string = "--format"
@@ -54,6 +57,13 @@ var DefaultCommunicator Communicator = CliCommunicator{
 var MacOSCommunicator Communicator = CliCommunicator{
 	DockerPath: macOSDockerPath,
 	Command:    []string{defaultDockerCommand, defaultDockerNoStreamArg, defaultDockerFormatArg, defaultDockerFormat},
+}
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
 }
 
 // Current returns the current `Stats` of each running Docker container.
